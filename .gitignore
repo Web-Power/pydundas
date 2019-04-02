@@ -1,0 +1,9 @@
+cenv/
+.idea
+*.pyc
+__pycache__
+dist
+*.egg-info
+build
+
+credentials.yaml

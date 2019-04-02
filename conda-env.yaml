@@ -1,0 +1,13 @@
+# create env with:
+# conda env create -p ./csa --file ./conda-env.yaml
+# delete with:
+# conda env remove -p ./csa
+# On your terminal: conda activate -p ./csa
+# csa = conda subject analysis
+name: dundas_session
+channels:
+  - defaults
+dependencies:
+  - setuptools
+  - twine # pipy upload
+  - tqdm # smart meter for twine
