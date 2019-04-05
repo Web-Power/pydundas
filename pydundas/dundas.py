@@ -154,5 +154,3 @@ class Session:
         r = self.s.delete(self.api + url, params={'sessionId': self.session_id}, **kwargs)
         r.raise_for_status()
         return r
-
-

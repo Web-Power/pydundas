@@ -8,6 +8,12 @@ name: dundas_session
 channels:
   - defaults
 dependencies:
+    ### !! Only dev packages. Runtime packages are in requirements.txt !!
+  # pypy/packaging
   - setuptools
   - twine # pipy upload
   - tqdm # smart meter for twine
+  # Testing
+  - coverage
+  - pycodestyle # was pep8
+  - mock
