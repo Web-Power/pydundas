@@ -1,9 +1,14 @@
-cenv/
+env/
+testenv/
+
 .idea
+
 *.pyc
 __pycache__
 dist
 *.egg-info
 build
+.coverage
+htmlcov
 
 credentials.yaml

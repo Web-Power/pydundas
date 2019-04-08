@@ -8,6 +8,5 @@ name: dundas_session
 channels:
   - defaults
 dependencies:
-  - setuptools
-  - twine # pipy upload
-  - tqdm # smart meter for twine
+  - pyyaml
+# Dependencies in *requirements.txt to be virtual env friendly, but it looks like the dependencies array cannot be empty.
