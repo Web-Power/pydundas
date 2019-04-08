@@ -1,22 +1,15 @@
 # Choose your environment manager: conda or virtualenv (venv)
-#ENVMAN := conda
-ENVMAN := venv
-
-
-ifeq ($(ENVMAN), conda)
-	ENVNAME := cenv
-else ifeq ($(ENVMAN), venv)
-	ENVNAME := venv
-else
-$(error "Variable 'ENVMAN' should be 'conda' or 'venv', not '$(ENVMAN)'")
-endif
+ENVMAN := conda
+#ENVMAN := venv
 
 # Working dir
 WORKON_HOME := $(abspath $(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
 # Where does pyDundas live?
 MODULEDIR=$(WORKON_HOME)/pydundas
+# Directory where the environment (conda or virtualenv) will live
+ENVDIR := env
 # Path to environment
-ENVPATH := $(WORKON_HOME)/$(ENVNAME)
+ENVPATH := $(WORKON_HOME)/$(ENVDIR)
 # Path to python inside the environment
 PY3 := $(ENVPATH)/bin/python3
 # Option that needs to be given many times
@@ -47,7 +40,7 @@ cleanbuild:
 envsetup:
 ifeq ($(ENVMAN), conda)
 	# Will install all dev dependencies
-	conda env create $(PENV) --file ./conda-env.yaml
+	test -d $(ENVPATH) || conda env create $(PENV) --file ./conda-env.yaml
 	# Will install run-time dependencies
 	conda install $(PENV) --yes --file $(WORKON_HOME)/requirements.txt
 	conda install $(PENV) --yes --file $(WORKON_HOME)/requirements-dev.txt
@@ -56,6 +49,8 @@ else ifeq ($(ENVMAN), venv)
 	$(PY3) -m pip install --upgrade pip setuptools wheel pycodestyle
 	$(PY3) -m pip install --upgrade -r $(WORKON_HOME)/requirements.txt
 	$(PY3) -m pip install --upgrade -r $(WORKON_HOME)/requirements-dev.txt
+else
+	$(error "Variable 'ENVMAN' should be 'conda' or 'venv', not '$(ENVMAN)'")
 endif
 
 ## Tests

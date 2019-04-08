@@ -1,5 +1,4 @@
-cenv/
-venv/
+env/
 testenv/
 
 .idea
