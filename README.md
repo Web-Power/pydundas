@@ -6,7 +6,7 @@ Manage sessions for [Dundas](https://www.dundas.com/).
 Dundas has a very complete [REST API](https://www.dundas.com/support/api-docs/rest/). You need a user to use it, and if you forget
 to log out, you will burn through your elastic hours very quickly.
 
-In short, Dundas is very friendly and let you have more users that paid for logged
+In short, Dundas is very friendly and lets you have more users than paid for logged
 in at the same time (elastic hours), but you should not abuse it (if you burn through
 them, you are blocked). 
 
@@ -20,7 +20,7 @@ It currently does 2 things for you.
 
 If you use `dundas.Session` within a [context manager](https://docs.python.org/3/reference/datamodel.html#context-managers),
 the context manager wil log you in and out automagically, no matter what happens. You can
-as well use the session object as a normal object as long as you do not forget to log in and out
+use the session object as a normal object as well as long as you do not forget to log in and out
 yourself.
 
 Each and every call to the API needs to have the same `sessionId` parameter. This module creates
@@ -33,6 +33,12 @@ Simply with pip:
 
 ```bash
 python3 -m pip install pydundas
+```
+
+or, assuming you do not have permission to store the module globally:
+
+```bash
+python3 -m pip install --user pydundas
 ```
 
 The module should be able to work with python2 as well, but it is untested and as python2 will be end of life'd in a few
@@ -71,12 +77,12 @@ You will have the same output as before, with extra statements:
 ```
 Logging in.
 Logged in.
-[{"name":"marbus","serverGroupId":1,"lastSeenTime":"2019-03-29T09:33:38.880327Z","__classType":"dundas.configuration.ServerInfo"}]
+[{"name":"winterfell","serverGroupId":1,"lastSeenTime":"2019-03-29T09:33:38.880327Z","__classType":"dundas.configuration.ServerInfo"}]
 Logging out.
 Logged out.
 ```
 
-Note that you can access yourself the logger to tune it to your heart's content.
+Note that you can access the logger yourself to tune it to your heart's content.
 ```python
 # Logger object are persistent. Let's restore loglevel to warning.
 Session.setLogLevel('warning')
@@ -103,7 +109,7 @@ You are still automagically logged out.
 with Session(user=user, pwd='valar dohaeris', url=url) as d:
         d.get('Server')
 ```
-will give you
+will give you:
 
 ```json
 {"logOnFailureReason":"UnrecognizedCredentials","message":"The provided user credentials were not recognized."}
@@ -111,20 +117,20 @@ will give you
 ```
 
 ## Full control without context manager
-You can do it, but do not forget to log in/out yourself.
+You can do it, but do not forget to log in/out yourself:
 ```python
 d = Session(user=user, pwd=pwd, url=url)
 d.login()
 print(d.get('Server').text)
 d.logout()
 ```
-You will get, as for the first example,
+You will get, as with the first example:
 ```json
 [{"name":"winterfell","serverGroupId":1,"lastSeenTime":"2019-03-29T09:33:38.880327Z","__classType":"dundas.configuration.ServerInfo"}]
 ```
 
 ## No context manager, object reuse
-No context manager and you reuse a logged-out Dundas session object. Nothing prevents you to log in again.
+No context manager and you reuse a logged-out Dundas session object. Nothing prevents you to log in again:
 ```python
 # d comes from the previous example, for instance.
 d.login()
@@ -137,7 +143,7 @@ with the same output as previously.
 ## No context manager, forget to log in
 ```python
 d = Session(user=user, pwd=pwd, url=url)
-# oops, no login!
+# Oops, no login!
 print(d.get('Server').text)
 d.logout()
 ```
