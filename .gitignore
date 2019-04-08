@@ -1,5 +1,9 @@
 cenv/
+venv/
+testenv/
+
 .idea
+
 *.pyc
 __pycache__
 dist
@@ -7,4 +11,5 @@ dist
 build
 .coverage
 htmlcov
+
 credentials.yaml

@@ -8,12 +8,5 @@ name: dundas_session
 channels:
   - defaults
 dependencies:
-    ### !! Only dev packages. Runtime packages are in requirements.txt !!
-  # pypy/packaging
-  - setuptools
-  - twine # pipy upload
-  - tqdm # smart meter for twine
-  # Testing
-  - coverage
-  - pycodestyle # was pep8
-  - mock
+  - pyyaml
+# Dependencies in *requirements.txt to be virtual env friendly, but it looks like the dependencies array cannot be empty.

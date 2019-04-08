@@ -152,3 +152,24 @@ The same would happen if you reuse an object after logging out.
 ## No context manager, forget to log out
 
 I'm not that mean and I won't burn through your elastic hours, but be careful and that's why context the manager is awesome.
+
+# Develop
+
+You can either use `conda` or `virtualenv`. Most relevant commands are in the Makefile.
+First edit the first line of the makefile to choose if you want to use conda or virtualenv. 
+
+```bash
+# Build an environment with all dependencies
+make devinit
+
+# Tests
+make pep8
+make unittest
+
+# Build a package
+make package
+
+# Clean up everything
+make purge
+
+```

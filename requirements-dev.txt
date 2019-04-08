@@ -1,0 +1,13 @@
+### !! Only dev packages. Runtime packages are in requirements.txt !!
+## pypy/packaging
+setuptools
+# pipy upload
+twine
+# smart meter for twine
+tqdm
+
+#Testing
+coverage
+# was pep8
+pycodestyle
+mock
