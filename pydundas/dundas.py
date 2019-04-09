@@ -2,9 +2,10 @@ import requests
 import logging
 from .exceptions import YamlNotReadableError, LoginFailedError
 
+
 class Session:
 
-    def __init__(self, user, pwd, url, loglevel=None):
+    def __init__(self, *, user, pwd, url, loglevel=None):
 
         # For session reuse - TCP connection reuse, keeps cookies.
         self.s = requests.session()

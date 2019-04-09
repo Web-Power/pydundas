@@ -5,9 +5,11 @@ from mock import MagicMock, patch
 
 class TestMatch(unittest.TestCase):
 
+    credentials = {'user':'user', 'pwd':'pwd', 'url':'url'}
+
     @patch('pydundas.dundas.requests.session')
     def test_get_calls_get(self, req):
-        session = Session('user', 'pwd', 'url')
+        session = Session(**self.credentials)
 
         get = MagicMock()
         req.return_value.get = get
@@ -17,7 +19,7 @@ class TestMatch(unittest.TestCase):
 
     @patch('pydundas.dundas.requests.session')
     def test_get_check_raise(self, req):
-        session = Session('user', 'pwd', 'url')
+        session = Session(**self.credentials)
 
         statusraise = MagicMock()
         req.return_value.get.return_value.raise_for_status = statusraise
