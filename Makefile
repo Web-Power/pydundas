@@ -1,6 +1,11 @@
 # Choose your environment manager: conda or virtualenv (venv)
-ENVMAN := conda
-#ENVMAN := venv
+# by setting the PYDUNDAS_ENVMAN environment variable
+ifdef PYDUNDAS_ENVMAN
+	# Actual value check will happen later, in a rule. It cannot happen here.
+	ENVMAN := $(PYDUNDAS_ENVMAN)
+else
+	ENVMAN := conda
+endif
 
 # Working dir
 WORKON_HOME := $(abspath $(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
@@ -16,8 +21,7 @@ PY3 := $(ENVPATH)/bin/python3
 PENV := --prefix $(ENVPATH)
 # Extra env to test the installation of the module from pypi
 TESTENV= $(WORKON_HOME)/testenv
-
-
+TESTENV= /tmp/testenv
 
 ## Setup rules
 devinit: purge envsetup
@@ -33,9 +37,11 @@ purge: cleanbuild
 
 cleanbuild:
 	# Dropping directories
-	rm -rf $(WORKON_HOME)/{target,dist,build,.coverage}
+	rm -rf $(WORKON_HOME)/target
+	rm -rf $(WORKON_HOME)/dist
+	rm -rf $(WORKON_HOME)/build
+	rm -rf $(WORKON_HOME)/.coverage
 	rm -rf $(WORKON_HOME)/*egg-info
-
 
 envsetup:
 ifeq ($(ENVMAN), conda)
@@ -70,37 +76,57 @@ test: unittest pep8
 ## Packaging
 
 package: cleanbuild
-	# PYDUNDASVER := $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)')
+	@echo Building Pydundas version $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 	$(PY3) setup.py sdist bdist_wheel
+	@echo Built Pydundas version $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
+
 
 ## Upload
 
+pypiversion:
+	@echo Module version: $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
+	@echo Latest version on test.pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
+	@echo Latest version on pypi: $(shell curl -s 'https://pypi.org/pypi/pydundas/json' | jq -r '.info.version').
+
+
 testpypi:
-	# Note: testpypi is defined in my $HOME/.pypitrc. Otherwise, replace --repository testpypi with
-	# --repository-url https://test.pypi.org/legacy/
+# Note: testpypi is defined in my $HOME/.pypitrc. Otherwise, replace --repository testpypi with
+# --repository-url https://test.pypi.org/legacy/
+	@echo Latest version of Pydundas on test.pypi before upload: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	$(PY3) -m twine upload --repository testpypi dist/*
+	@echo Latest version of Pydundas on test.pypi after upload: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
+	@echo Note that it can take a few minutes to get the new version available. Check with make pypiversions.
 
 # Yes, test test: test the install from the test pypi repo.
 testtestinstall:
-	# Install pydundas from tespypi
+# Install pydundas from tespypi
 	rm -rf $(TESTENV)
-	# -m venv is always there, conda maybe not
+# -m venv is always there, conda maybe not.
 	python3 -m venv $(TESTENV)
-	# Note: cd first to prevent the current directory to be found as valid module.
+# Note: cd first to prevent the current directory to be found as valid module.
 	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pydundas
-	$(TESTENV)/bin/pip freeze | grep -i pydundas
+	@echo Module version: $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
+	@echo Version on test Pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
+	@echo Version in test env: $(shell cd $(TESTENV) && $(TESTENV)/bin/pip3 freeze | grep -i pydundas).
+# Should not error out.
+	cd $(TESTENV) && $(TESTENV)/bin/python3 -c "from pydundas import __version__ as v; from pydundas import Session; print(v); Session(user='u', pwd='p', url='u')"
 
 pypi:
+	@echo Latest version of Pydundas on pypi before upload: $(shell curl -s 'https://pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	$(PY3) -m twine upload --repository pypi dist/*
+	@echo Latest version of Pydundas on pypi after upload: $(shell curl -s 'https://pypi.org/pypi/pydundas/json' | jq -r '.info.version').
+	@echo Note that it can take a few minutes to get the new version available. Check with make pypiversions.
 
 # Test install from the real pypi repo.
 testinstall:
-	# Install pydundas from tespypi
+# Install pydundas from testpypi.
 	rm -rf $(TESTENV)
-	# -m venv is always there, conda maybe not
+# -m venv is always there, conda maybe not.
 	python3 -m venv $(TESTENV)
-	# Note: cd first to prevent the current directory to be found as valid module.
+# Note: cd first to prevent the current directory to be found as valid module.
 	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --upgrade pydundas
-	$(TESTENV)/bin/pip freeze | grep -i pydundas
-
-
+	@echo Module version: $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
+	@echo Version on Pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
+	@echo Version in test env: $(shell cd $(TESTENV) && $(TESTENV)/bin/pip3 freeze | grep -i pydundas).
+# Should not error out.
+	cd $(TESTENV) && $(TESTENV)/bin/python3 -c "from pydundas import __version__ as v; from pydundas import Session; print(v); Session(user='u', pwd='p', url='u')"
