@@ -99,15 +99,15 @@ testpypi:
 testtestinstall: getver
 	# Install pydundas from tespypi
 	rm -rf $(TESTENV)
-	# -m venv is always there, conda maybe not
+	# -m venv is always there, conda maybe not.
 	python3 -m venv $(TESTENV)
 	# Note: cd first to prevent the current directory to be found as valid module.
 	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pydundas
 	@echo Module version: $(PYDUNDASVER).
 	@echo Version on test Pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	@echo Version in test env: $(shell $(TESTENV)/bin/pip freeze | grep -i pydundas).
-	# Should not error out
-	cd $(TESTENV) && $(TESTENV)/bin/python3 -c "from pydundas import __version__ as v; from pydundas.dundas import Session; prtin(v); Session(user='u', pwd='p', url='u')"
+	# Should not error out.
+	cd $(TESTENV) && $(TESTENV)/bin/python3 -c "from pydundas import __version__ as v; from pydundas import Session; print(v); Session(user='u', pwd='p', url='u')"
 
 pypi:
 	@echo Latest version of Pydundas on pypi before upload: $(shell curl -s 'https://pypi.org/pypi/pydundas/json' | jq -r '.info.version').
@@ -117,14 +117,14 @@ pypi:
 
 # Test install from the real pypi repo.
 testinstall: getver
-	# Install pydundas from tespypi
+	# Install pydundas from testpypi.
 	rm -rf $(TESTENV)
-	# -m venv is always there, conda maybe not
+	# -m venv is always there, conda maybe not.
 	python3 -m venv $(TESTENV)
 	# Note: cd first to prevent the current directory to be found as valid module.
 	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --upgrade pydundas
 	@echo Module version: $(PYDUNDASVER).
 	@echo Version on Pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	@echo Version in test env: $(shell $(TESTENV)/bin/pip freeze | grep -i pydundas).
-	# Should not error out
-	cd $(TESTENV) && $(TESTENV)/bin/python3 -c "from pydundas import __version__ as v; from pydundas.dundas import Session; print(v); Session(user='u', pwd='p', url='u')"
+	# Should not error out.
+	cd $(TESTENV) && $(TESTENV)/bin/python3 -c "from pydundas import __version__ as v; from pydundas import Session; print(v); Session(user='u', pwd='p', url='u')"
