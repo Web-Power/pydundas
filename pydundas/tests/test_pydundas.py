@@ -5,7 +5,7 @@ from mock import MagicMock, patch
 
 class TestMatch(unittest.TestCase):
 
-    credentials = {'user':'user', 'pwd':'pwd', 'url':'url'}
+    credentials = {'user': 'user', 'pwd': 'pwd', 'url': 'url'}
 
     @patch('pydundas.dundas.requests.session')
     def test_get_calls_get(self, req):
@@ -26,5 +26,3 @@ class TestMatch(unittest.TestCase):
 
         session.get('an/url')
         statusraise.assert_called()
-
-

@@ -2,6 +2,7 @@ import requests
 import logging
 from .exceptions import YamlNotReadableError, LoginFailedError
 
+
 # Helper method, not really part of the class itself.
 def creds_from_yaml(yamlpath):
     """Make everyone's life easy. This returns a dictionary that can be used with ** to initialise your session."""
