@@ -1,6 +1,11 @@
 # Choose your environment manager: conda or virtualenv (venv)
-ENVMAN := conda
-#ENVMAN := venv
+# by setting the PYDUNDAS_ENVMAN environment variable
+ifdef PYDUNDAS_ENVMAN
+	# Actual value check will happen later, in a rule. It cannot happen here.
+	ENVMAN := $(PYDUNDAS_ENVMAN)
+else
+	ENVMAN := conda
+endif
 
 # Working dir
 WORKON_HOME := $(abspath $(dir $(realpath $(firstword $(MAKEFILE_LIST)))))
@@ -16,8 +21,6 @@ PY3 := $(ENVPATH)/bin/python3
 PENV := --prefix $(ENVPATH)
 # Extra env to test the installation of the module from pypi
 TESTENV= $(WORKON_HOME)/testenv
-
-
 
 ## Setup rules
 devinit: purge envsetup
@@ -71,18 +74,16 @@ test: unittest pep8
 
 ## Packaging
 
-package: cleanbuild getver
-	@echo Building Pydundas version $(PYDUNDASVER).
+package: cleanbuild
+	@echo Building Pydundas version $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 	$(PY3) setup.py sdist bdist_wheel
-	@echo Built Pydundas version $(PYDUNDASVER).
+	@echo Built Pydundas version $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 
-getver:
-PYDUNDASVER := $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)')
 
 ## Upload
 
-pypiversion: getver
-	@echo Module version: $(PYDUNDASVER).
+pypiversion:
+	@echo Module version: $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 	@echo Latest version on test.pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	@echo Latest version on pypi: $(shell curl -s 'https://pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 
@@ -96,14 +97,14 @@ testpypi:
 	@echo Note that it can take a few minutes to get the new version available. Check with make pypiversions.
 
 # Yes, test test: test the install from the test pypi repo.
-testtestinstall: getver
+testtestinstall:
 	# Install pydundas from tespypi
 	rm -rf $(TESTENV)
 	# -m venv is always there, conda maybe not.
 	python3 -m venv $(TESTENV)
 	# Note: cd first to prevent the current directory to be found as valid module.
 	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pydundas
-	@echo Module version: $(PYDUNDASVER).
+	@echo Module version: $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 	@echo Version on test Pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	@echo Version in test env: $(shell $(TESTENV)/bin/pip freeze | grep -i pydundas).
 	# Should not error out.
@@ -123,7 +124,7 @@ testinstall: getver
 	python3 -m venv $(TESTENV)
 	# Note: cd first to prevent the current directory to be found as valid module.
 	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --upgrade pydundas
-	@echo Module version: $(PYDUNDASVER).
+	@echo Module version: $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 	@echo Version on Pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	@echo Version in test env: $(shell $(TESTENV)/bin/pip freeze | grep -i pydundas).
 	# Should not error out.
