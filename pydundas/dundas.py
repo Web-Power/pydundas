@@ -38,7 +38,7 @@ class Session:
 
         self.user, self.pwd = user, pwd
         self.url = url if url.startswith('http') else 'https://{}'.format(url)
-        self.api = self.url + '/api/'
+        self.endpoint = self.url + '/api/'
 
         # Will be setup within login()
         self.session_id = None
@@ -93,7 +93,7 @@ class Session:
         }
         self.logger.info('Logging in.')
         # We can't use self.post() yet as session_id is not set.
-        r = self.s.post(self.api + 'logon/', json=login_data)
+        r = self.s.post(self.endpoint + 'logon/', json=login_data)
         # The following line exceptions out on not 200 return code.
         r.raise_for_status()
 
@@ -124,31 +124,26 @@ class Session:
     # params parameter. Let's make everybody's life easy.
     # A query could legitimately need to extend the 'params' parameter, hence the merge of kwargs
     # with the hardcoded dict with sessionId.
-    def get(self, url, **kwargs):
+
+    def extend_with_sessionid(self, kwargs):
         if 'params' in kwargs:
             kwargs['params']['sessionId'] = self.session_id
         else:
             kwargs['params'] = {'sessionId': self.session_id}
+        return kwargs
 
-        r = self.s.get(self.api + url, **kwargs)
+
+    def get(self, url, **kwargs):
+        r = self.s.get(self.endpoint + url, **self.extend_with_sessionid(kwargs))
         r.raise_for_status()
         return r
 
     def post(self, url, **kwargs):
-        if 'params' in kwargs:
-            kwargs['params']['sessionId'] = self.session_id
-        else:
-            kwargs['params'] = {'sessionId': self.session_id}
-        r = self.s.post(self.api + url, **kwargs)
+        r = self.s.post(self.endpoint + url, **self.extend_with_sessionid(kwargs))
         r.raise_for_status()
         return r
 
     def delete(self, url, **kwargs):
-        if 'params' in kwargs:
-            kwargs['params']['sessionId'] = self.session_id
-        else:
-            kwargs['params'] = {'sessionId': self.session_id}
-
-        r = self.s.delete(self.api + url, **kwargs)
+        r = self.s.delete(self.endpoint + url, **self.extend_with_sessionid(kwargs))
         r.raise_for_status()
         return r

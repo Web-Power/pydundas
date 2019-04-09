@@ -2,9 +2,10 @@ class Api:
 
     def __init__(self, session):
         self.session = session
+        self._project = None
 
     def project(self):
-        if not getattr(self, '_project', None):
+        if not self._project:
             from .project import Project
             self._project = Project(self.session)
 
