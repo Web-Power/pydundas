@@ -2,6 +2,31 @@ import requests
 import logging
 from .exceptions import YamlNotReadableError, LoginFailedError
 
+# Helper method, not really part of the class itself.
+def creds_from_yaml(yamlpath):
+    """Make everyone's life easy. This returns a dictionary that can be used with ** to initialise your session."""
+    # Only import yaml if you actually require it.
+    import yaml
+    try:
+        with open(yamlpath, 'r') as f:
+            try:
+                creds = yaml.load(f, Loader=yaml.Loader)
+            except yaml.YAMLError as e:
+                raise YamlNotReadableError from e
+
+            mandatory_keys = ["url", "user", "pwd"]
+            try:
+                return {k: creds[k] for k in mandatory_keys}
+            except KeyError:
+                raise (YamlNotReadableError(
+                    "File '{}' needs to be valid yaml and have 'user', 'pwd' and 'url' fields.".format(yamlpath))
+                )
+
+    except FileNotFoundError as e:
+        raise YamlNotReadableError from e
+    except OSError as e:  # permission, isADirectory and more weird stuff
+        raise YamlNotReadableError from e
+
 
 class Session:
 
@@ -39,31 +64,6 @@ class Session:
         # Note: default log level on creation is warning.
         if loglevel:
             logging.getLogger(__name__).setLevel(loglevel.upper())
-
-    @classmethod
-    def creds_from_yaml(cls, yamlpath):
-        """Make everyone's life easy. This returns a dictionary that can be used with ** to initialise your session."""
-        # Only import yaml if you actually require it.
-        import yaml
-        try:
-            with open(yamlpath, 'r') as f:
-                try:
-                    creds = yaml.load(f, Loader=yaml.Loader)
-                except yaml.YAMLError as e:
-                    raise YamlNotReadableError from e
-
-                mandatory_keys = ["url", "user", "pwd"]
-                try:
-                    return {k: creds[k] for k in mandatory_keys}
-                except KeyError:
-                    raise(YamlNotReadableError(
-                        "File '{}' needs to be valid yaml and have 'user', 'pwd' and 'url' fields.".format(yamlpath))
-                    )
-
-        except FileNotFoundError as e:
-            raise YamlNotReadableError from e
-        except OSError as e:  # permission, isADirectory and more weird stuff
-            raise YamlNotReadableError from e
 
     def _setlogging(self, loglevel):
 
