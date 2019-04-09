@@ -12,3 +12,5 @@ build
 htmlcov
 
 credentials.yaml
+
+*.swp

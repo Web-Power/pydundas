@@ -91,6 +91,21 @@ Session.setLogLevel('warning')
 logger = logging.getLogger('pydundas.dundas')
 ```
 
+## Read credentials from a yaml file
+If you have a yaml file with a `user`, `pwd` and `url` key, then you can read it from pydundas:
+```yaml
+user: arya
+pwd: 'valar morghulis'
+url: winterfell.got
+```
+
+```python
+from pydundas import creds_from_yaml
+creds=creds_from_yaml('credentials.yaml')
+with Session(**creds) as d:
+    print(d.get('Server').text)
+```
+
 ## Exception within the context manager are properly handled
 ```python
 with Session(user=user, pwd=pwd, url=url) as d:
