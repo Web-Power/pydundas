@@ -50,17 +50,15 @@ class Session:
                 try:
                     creds = yaml.load(f, Loader=yaml.Loader)
                 except yaml.YAMLError as e:
-                    # self.logger.error("File {} is not valid yaml.".format(credsyaml), exc_info=True)
                     raise YamlNotReadableError from e
 
                 mandatory_keys = ["url", "user", "pwd"]
-                if not all(k in creds for k in mandatory_keys):
+                try:
+                    return {k: creds[k] for k in mandatory_keys}
+                except KeyError:
                     raise(YamlNotReadableError(
                         "File '{}' needs to be valid yaml and have 'user', 'pwd' and 'url' fields.".format(yamlpath))
                     )
-                else:
-                    # Only get relevant keys in case there's more in the file.
-                    return {k: creds[k] for k in mandatory_keys}
 
         except FileNotFoundError as e:
             raise YamlNotReadableError from e
