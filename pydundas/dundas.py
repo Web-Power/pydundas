@@ -122,17 +122,33 @@ class Session:
 
     # All get/post/delete will have the same url base, and will all require the same
     # params parameter. Let's make everybody's life easy.
+    # A query could legitimately need to extend the 'params' parameter, hence the merge of kwargs
+    # with the hardcoded dict with sessionId.
     def get(self, url, **kwargs):
-        r = self.s.get(self.api + url, params={'sessionId': self.session_id}, **kwargs)
+        if 'params' in kwargs:
+            kwargs['params']['sessionId'] = self.session_id
+        else:
+            kwargs['params'] = {'sessionId': self.session_id}
+
+        r = self.s.get(self.api + url, **kwargs)
         r.raise_for_status()
         return r
 
     def post(self, url, **kwargs):
-        r = self.s.post(self.api + url, params={'sessionId': self.session_id}, **kwargs)
+        if 'params' in kwargs:
+            kwargs['params']['sessionId'] = self.session_id
+        else:
+            kwargs['params'] = {'sessionId': self.session_id}
+        r = self.s.post(self.api + url, **kwargs)
         r.raise_for_status()
         return r
 
     def delete(self, url, **kwargs):
-        r = self.s.delete(self.api + url, params={'sessionId': self.session_id}, **kwargs)
+        if 'params' in kwargs:
+            kwargs['params']['sessionId'] = self.session_id
+        else:
+            kwargs['params'] = {'sessionId': self.session_id}
+
+        r = self.s.delete(self.api + url, **kwargs)
         r.raise_for_status()
         return r
