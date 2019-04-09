@@ -16,7 +16,7 @@ out, it will be done for you, in all cases if you so wish.
 
 # Why this module is useful
 
-It currently does 2 things for you.
+It currently does 3 things for you.
 
 If you use `dundas.Session` within a [context manager](https://docs.python.org/3/reference/datamodel.html#context-managers),
 the context manager wil log you in and out automagically, no matter what happens. You can
@@ -26,6 +26,9 @@ yourself.
 Each and every call to the API needs to have the same `sessionId` parameter. This module creates
 shortcuts for you for `get`, `post` and `delete`, to make your life easier. You do not need
 to repeat the host, api path prefix or sessionId every single time.
+
+Some API calls are ported and might have helper methods. I am updating the module based on what I 
+need and use, so I do not expect to have everything ported on my own.
 
 # Installation
 
@@ -173,6 +176,18 @@ The same would happen if you reuse an object after logging out.
 ## No context manager, forget to log out
 
 I'm not that mean and I won't burn through your elastic hours, but be careful and that's why context the manager is awesome.
+
+# API calls
+
+For example, to find the ID of a project:
+```python
+from pydundas import Api, Session, creds_from_yaml
+
+with Session(**creds_from_yaml('credentials.yaml')) as d:
+    a=Api(d)
+    project = a.project()
+    print(project.getProjectIDByName('DP'))
+```
 
 # Develop
 
