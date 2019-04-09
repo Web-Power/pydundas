@@ -104,7 +104,7 @@ testtestinstall:
 # -m venv is always there, conda maybe not.
 	python3 -m venv $(TESTENV)
 # Note: cd first to prevent the current directory to be found as valid module.
-	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pydundas
+	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --no-cache-dir --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pydundas
 	@echo Module version: $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 	@echo Version on test Pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	@echo Version in test env: $(shell cd $(TESTENV) && $(TESTENV)/bin/pip3 freeze | grep -i pydundas).
@@ -124,7 +124,7 @@ testinstall:
 # -m venv is always there, conda maybe not.
 	python3 -m venv $(TESTENV)
 # Note: cd first to prevent the current directory to be found as valid module.
-	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --upgrade pydundas
+	cd $(TESTENV) && $(TESTENV)/bin/python3 -m pip install --no-cache-dir --upgrade pydundas
 	@echo Module version: $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 	@echo Version on Pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	@echo Version in test env: $(shell cd $(TESTENV) && $(TESTENV)/bin/pip3 freeze | grep -i pydundas).
