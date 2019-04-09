@@ -1,24 +1,6 @@
 import requests
 import logging
-
-
-class LoginFailedError(Exception):
-    """
-    Exception raised when login fails.
-    """
-    pass
-
-
-class NotLoggedInError(Exception):
-    """
-    Exception raised when an api call is done before login.
-    """
-    pass
-
-
-class YamlNotReadable(Exception):
-    pass
-
+from .exceptions import YamlNotReadableError, LoginFailedError
 
 class Session:
 
@@ -68,11 +50,11 @@ class Session:
                     creds = yaml.load(f, Loader=yaml.Loader)
                 except yaml.YAMLError as e:
                     # self.logger.error("File {} is not valid yaml.".format(credsyaml), exc_info=True)
-                    raise YamlNotReadable from e
+                    raise YamlNotReadableError from e
 
                 mandatory_keys = ["url", "user", "pwd"]
                 if not all(k in creds for k in mandatory_keys):
-                    raise(YamlNotReadable(
+                    raise(YamlNotReadableError(
                         "File '{}' needs to be valid yaml and have 'user', 'pwd' and 'url' fields.".format(yamlpath))
                     )
                 else:
@@ -80,9 +62,9 @@ class Session:
                     return {k: creds[k] for k in mandatory_keys}
 
         except FileNotFoundError as e:
-            raise YamlNotReadable from e
+            raise YamlNotReadableError from e
         except OSError as e:  # permission, isADirectory and more weird stuff
-            raise YamlNotReadable from e
+            raise YamlNotReadableError from e
 
     def _setlogging(self, loglevel):
 

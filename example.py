@@ -1,4 +1,5 @@
-from pydundas.dundas import Session, LoginFailedError
+from pydundas import Session
+from pydundas.exceptions import LoginFailedError
 import requests
 
 # If url does not start with http, then 'https://' will be prepended,
