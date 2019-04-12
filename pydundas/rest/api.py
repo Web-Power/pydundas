@@ -3,14 +3,16 @@ import importlib
 
 class Api:
 
+    apis = [
+        'constant',
+        'project'
+    ]
+
     def __init__(self, session):
         self.session = session
-        self.define_all([
-            'constant',
-            'project'
-        ])
+        self.define_all()
 
-    def define_all(self, calls):
+    def define_all(self):
         """
         After the 3rd copy/paste/replace I went meta.
         All (or most at least) classes will have the same template:
@@ -20,25 +22,26 @@ class Api:
         In comments are the lines you would need to explicitly write for eg. notification().
 
         """
-        for c in calls:
+        for api in self.apis:
+            setattr(self, api, self._define_one(api))
 
-            # This is the method that will be bound the proper attribute name.
-            def template():
-                # if not self._notification:
-                apimethod = '_ ' + c
-                if not getattr(self, apimethod, None):
-                    # from .notification import Notification
+    def _define_one(self, c):
+        # On its own function to use closure to not have variable reuse inside the for loop.
+        def template():
+            # if not self._notification:
+            apimethod = '_ ' + c
+            if not getattr(self, apimethod, None):
+                # from .notification import Notification
 
-                    # __module__ is pydundas.rest.api, and relative imports need the package name, which is everything
-                    # up to the last dot.
-                    pkg = self.__module__.rpartition('.')[0]
-                    mod = importlib.import_module('.' + c, pkg)
-                    cls = getattr(mod, c.capitalize())
+                # __module__ is pydundas.rest.api, and relative imports need the package name, which is everything
+                # up to the last dot.
+                pkg = self.__module__.rpartition('.')[0]
+                mod = importlib.import_module('.' + c, pkg)
+                cls = getattr(mod, c.capitalize())
 
-                    # self._notification = Notification(self.session)
-                    setattr(self, apimethod, cls(self.session))
+                # self._notification = Notification(self.session)
+                setattr(self, apimethod, cls(self.session))
 
-                # return self._notification
-                return getattr(self, apimethod)
+            return getattr(self, apimethod)
 
-            setattr(self, c, template)
+        return template
