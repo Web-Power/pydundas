@@ -3,14 +3,26 @@ from pydundas import Api
 from pydundas.rest.constant import ConstantIdError, ConstantNameError
 
 
-class TestPydundas(unittest.TestCase):
+class TestConstant(unittest.TestCase):
+
+    # Change constants in the constant class
+    @classmethod
+    def setUpClass(cls):
+        c = Api(None).constant()
+        cls.old_constants = c.__class__.constants
+        c.__class__.constants = {
+            'NAME': 'id'
+        }
+
+    # And restore them
+    @classmethod
+    def tearDownClass(cls):
+        c = Api(None).constant()
+        c.__class__.constants = cls.old_constants
 
     @staticmethod
     def get_testable_constant():
         c = Api(None).constant()
-        c.__class__.constants = {
-            'NAME': 'id'
-        }
         return c
 
     def test_get_by_valid_id_returns_good_name(self):
