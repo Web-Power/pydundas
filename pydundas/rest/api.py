@@ -5,7 +5,10 @@ class Api:
 
     def __init__(self, session):
         self.session = session
-        self.define_all(['project'])
+        self.define_all([
+            'constant',
+            'project'
+        ])
 
     def define_all(self, calls):
         """
