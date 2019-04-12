@@ -3,7 +3,7 @@ from pydundas.dundas import Session
 from mock import MagicMock, patch
 
 
-class TestMatch(unittest.TestCase):
+class TestPydundas(unittest.TestCase):
 
     credentials = {'user': 'user', 'pwd': 'pwd', 'url': 'url'}
 

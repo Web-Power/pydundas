@@ -132,7 +132,6 @@ class Session:
             kwargs['params'] = {'sessionId': self.session_id}
         return kwargs
 
-
     def get(self, url, **kwargs):
         r = self.s.get(self.endpoint + url, **self.extend_with_sessionid(kwargs))
         r.raise_for_status()
