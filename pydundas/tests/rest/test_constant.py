@@ -40,3 +40,7 @@ class TestConstant(unittest.TestCase):
     def test_get_by_wrong_name_returns_ConstantNameError(self):
         c = self.get_testable_constant()
         self.assertRaises(ConstantNameError, c.getIdByName, 'unknown name')
+
+    def test_constants_become_attributes(self):
+        c = self.get_testable_constant()
+        self.assertEqual(c.NAME, 'id')

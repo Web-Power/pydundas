@@ -143,9 +143,10 @@ class Constant:
         "WEB_APP_MODULE_ID": "21259d43-ee4c-4b06-b73f-c9c2cdce60c6",
     }
 
-    # Not really needed, but lets me use the global api loader in Api.py
-    def __init__(self, *irrelevantagrs):
-        pass
+    def __init__(self, *irrelevantargs):
+        # Move constants one level up for easy access.
+        for name, uuid in self.constants.items():
+            setattr(self, name, uuid)
 
     @classmethod
     def getNameById(cls, id):
