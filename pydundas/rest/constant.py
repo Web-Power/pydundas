@@ -149,17 +149,20 @@ class Constant:
             setattr(self, name, uuid)
 
     @classmethod
-    def getNameById(cls, id):
+    def getNamesById(cls, id):
+        """Get names, potentially more than one, for one ID."""
+        names = []
         for k, v in cls.constants.items():
             if v.lower() == id.lower():
-                return k
+                names.append(k)
+        if names:
+            return names
         else:
             raise ConstantIdError("Could not find constant with id '{}'.".format(id))
 
     @classmethod
     def getIdByName(cls, name):
         try:
-            print(cls.constants)
             return cls.constants[name.upper()]
         except KeyError as e:
             # from None hides the original KeyError, which is redundant.
