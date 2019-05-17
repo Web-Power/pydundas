@@ -5,7 +5,8 @@ class Api:
 
     apis = [
         'constant',
-        'project'
+        'notification',
+        'project',
     ]
 
     def __init__(self, session):
