@@ -9,7 +9,7 @@ class ConstantNameError(KeyError):
 
 
 class Constant:
-    """Expose Dudnas constants with human names"""
+    """Expose Dundas constants with human names"""
 
     # In a javascript console:
     # for (d in dundas.constants) { if (d.endsWith('_ID')){console.log(d + ": " + dundas.constants[d])}}
