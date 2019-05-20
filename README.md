@@ -3,16 +3,10 @@ Manage sessions for [Dundas](https://www.dundas.com/).
 # Description
 
 
-Dundas has a very complete [REST API](https://www.dundas.com/support/api-docs/rest/). You need a user to use it, and if you forget
-to log out, you will burn through your elastic hours very quickly.
+Dundas has a very complete [REST API](https://www.dundas.com/support/api-docs/rest/).
 
-In short, Dundas is very friendly and lets you have more users than paid for logged
-in at the same time (elastic hours), but you should not abuse it (if you burn through
-them, you are blocked). 
-
-Always be sure to be logged out, even in case of exception or multiple path is a pain.
-This is the idea behind this module. You will not need to remember yourself to log
-out, it will be done for you, in all cases if you so wish.
+With completeness comes complexity, and this module will help you use the query in an
+easier way.
 
 # Why this module is useful
 
@@ -29,6 +23,7 @@ to repeat the host, api path prefix or sessionId every single time.
 
 Some API calls are ported and might have helper methods. I am updating the module based on what I 
 need and use, so I do not expect to have everything ported on my own.
+
 
 # Installation
 
@@ -179,6 +174,7 @@ I'm not that mean and I won't burn through your elastic hours, but be careful an
 
 # API calls
 
+## Project
 For example, to find the ID of a project:
 ```python
 from pydundas import Api, Session, creds_from_yaml
@@ -186,9 +182,35 @@ from pydundas import Api, Session, creds_from_yaml
 with Session(**creds_from_yaml('credentials.yaml')) as d:
     a=Api(d)
     project = a.project()
-    print(project.getProjectIDByName('DP'))
+    print(project.getProjectIdByName('DP'))
 ```
 
+## Constant
+Most constants can be used via their human-readable name.
+```python
+from pydundas import Api, Session, creds_from_yaml
+
+with Session(**creds_from_yaml('credentials.yaml')) as d:
+    a=Api(d)
+    c = a.constant()
+    # returns ['STANDARD_EXCEL_EXPORT_PROVIDER_ID']
+    print(c.getNamesById('679e6337-48aa-4aa3-ad3d-db30ce943dc9'))
+    # returns '679e6337-48aa-4aa3-ad3d-db30ce943dc9'
+    print(c.getIdByName('STANDARD_EXCEL_EXPORT_PROVIDER_ID'))
+```
+
+## Notification
+
+You can get a notification by its name and then run it.
+```python
+    napi = api.notification()
+    notif = napi.getExactName(name='Awesome notification')
+
+    if len(notif) != 1:
+        print("None or more than one notification with this name.")
+        sys.exit(1)
+    napi.run(notif[0]['id'])
+```
 # Develop
 
 You can either use `conda` or `virtualenv`. Most relevant commands are in the Makefile.

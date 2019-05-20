@@ -132,18 +132,25 @@ class Session:
             kwargs['params'] = {'sessionId': self.session_id}
         return kwargs
 
+    def _raise_for_status(self, r):
+        """Log body of the request in case of HTTPError."""
+        try:
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            self.logger.info(r.json())
+            raise
 
     def get(self, url, **kwargs):
         r = self.s.get(self.endpoint + url, **self.extend_with_sessionid(kwargs))
-        r.raise_for_status()
+        self._raise_for_status(r)
         return r
 
     def post(self, url, **kwargs):
         r = self.s.post(self.endpoint + url, **self.extend_with_sessionid(kwargs))
-        r.raise_for_status()
+        self._raise_for_status(r)
         return r
 
     def delete(self, url, **kwargs):
         r = self.s.delete(self.endpoint + url, **self.extend_with_sessionid(kwargs))
-        r.raise_for_status()
+        self._raise_for_status(r)
         return r
