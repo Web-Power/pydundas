@@ -1,5 +1,6 @@
 import time
 
+
 class Notification:
 
     def __init__(self, session):
@@ -85,8 +86,6 @@ class Notification:
                         return n
             else:
                 return None
-
-
 
     # Default filter: all
     def _getWithFilter(self, filters=[]):
