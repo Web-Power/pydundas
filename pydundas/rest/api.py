@@ -41,8 +41,8 @@ class Api:
                 mod = importlib.import_module('.' + c, pkg)
                 cls = getattr(mod, c.capitalize())
 
-                # self._notification = Notification(self.session)
-                setattr(self, apimethod, cls(self.session))
+                # self._notification = Notification (self.session, self)
+                setattr(self, apimethod, cls(session=self.session, api=self))
 
             return getattr(self, apimethod)
 

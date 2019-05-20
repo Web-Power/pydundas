@@ -3,8 +3,9 @@ import time
 
 class Notification:
 
-    def __init__(self, session):
+    def __init__(self, session=None, api=None):
         self.session = session
+        self.api = api
 
     def getContainingName(self, name):
         """Get all notification containing this name. Case insensitive."""
