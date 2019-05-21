@@ -91,33 +91,18 @@ class Cube:
 
     def isWarehousing(self):
         """Is this cube being warehoused right now?"""
-        runs = self.api.session.post('job/query/', json={
-            "queryJobsOptions": {
-                "filter": [
-                    {
-                        "field": "JobKind",
-                        "operator": "Equals",
-                        "value": "UpdateDataWarehouse"
-                    },
-                    {
-                        "field": "relatedItemId",
-                        "operator": "Equals",
-                        "value": self.id
-                    }
-                ],
-                "pageNumber": 1,
-                # If there are more than 1, there is an issue. Let's accept at least 2 to check.
-                "pageSize": 2
-            }
-        }).json()
-        if len(runs) == 0:
+        japi = self.api.api.job()
+        run = japi.getByIdAndType(
+            kind=japi.WAREHOUSE,
+            relatedId=self.id
+        )
+
+        if run:
+            # https://www.dundas.com/support/api-docs/NET/#html/T_Dundas_BI_WebApi_Models_JobData.htm
+            return run['status'].lower() == 'running'
+        else:
             # It never ran
             return False
-        elif len(runs) == 1:
-            # https://www.dundas.com/support/api-docs/NET/#html/T_Dundas_BI_WebApi_Models_JobData.htm
-            return runs[0]['status'].lower() == 'running'
-        else:
-            raise RuntimeError(f"More than one job found for warehousing cube {self.id}. It does not make sense.")
 
     def waitForWarehousingCompletion(self):
         while self.isWarehousing():
