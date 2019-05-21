@@ -4,7 +4,7 @@ class Js:
         pass
 
     @classmethod
-    def SingleNumberValue(cls, parameterId, value, isInverted:False):
+    def SingleNumberValue(cls, parameterId, value, isInverted=False):
         return {
             "__classType": "dundas.data.SingleNumberValue",
             "parameterValueType": "SingleNumber",
@@ -14,7 +14,7 @@ class Js:
         }
 
     @classmethod
-    def SingleBooleanValue(cls, parameterId, value, isInverted:False):
+    def SingleBooleanValue(cls, parameterId, value, isInverted=False):
         return {
             "__classType": "dundas.data.SingleBooleanValue",
             "parameterValueType": "SingleBoolean",
@@ -30,4 +30,3 @@ class Js:
     @classmethod
     def SingleFalseValue(cls, parameterId):
         return cls.SingleBooleanValue(parameterId, False)
-
