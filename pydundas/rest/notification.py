@@ -1,96 +1,46 @@
 import time
 
 
-class Notification:
+class NotificationNameNotUnique(Exception):
+    pass
+
+
+class NotificationApi:
+    """Uses the Api to create an actual notification object."""
 
     def __init__(self, session=None, api=None):
         self.session = session
         self.api = api
 
-    def getContainingName(self, name):
-        """Get all notification containing this name. Case insensitive."""
-        return self._getWithFilter(filters=[{
-            "field": "Name",
-            "operator": "Contains",
-            "value": name,
-            "options": "None"
-        }])
-
-    def getExactName(self, name):
+    def getByName(self, name):
         """Get all notification with this exact name. Case insensitive."""
-        return self._getWithFilter(filters=[{
+        everything = self._getWithFilter(filters=[{
             "field": "Name",
             "operator": "Equals",
             "value": name,
             "options": "None"
         }])
 
-    def getById(self, nid):
-        return self.session.get(f'notification/{nid}').json()
-
-    def run(self, ids):
-        """Run all notifications with given ids. If Id is a string, just run the one. There is no output
-        on success."""
-        if isinstance(ids, str):
-            ids = [ids]
-
-        return self.session.post('notification/run', **{'json': ids})
-
-    def isRunning(self, nid):
-        """True if the notification in parameter is running, false otherwise."""
-        lastrun = self.getLastRun(nid)
-        if lastrun:
-            return lastrun['status'].lower() == 'running'.lower()
+        if len(everything) == 0:
+            return None
+        elif len(everything) == 1:
+            return Notification(
+                api=self,
+                nid=everything[0]['id'],
+                data=everything[0]
+            )
         else:
-            return False
+            raise NotificationNameNotUnique(f"There are more than one notification with name '{name}'.")
 
-    def waitForCompletedRun(self, nid):
-        """Wait for the notification in parameter to be complete."""
-        while self.isRunning(nid):
-            time.sleep(15)
-
-    def getLastRun(self, nid):
-        """Return the Last run of the notification given in ID."""
-        pageNumber = 1
-        pageSize = 25  # That's what Dundas uses as default.
-        while True:
-            batch = self.session.post('job/query', **{
-                'json': {
-                    "queryJobsOptions": {
-                        "pageNumber": pageNumber,
-                        "pageSize": pageSize,
-                        "orderBy": [{
-                            "jobQueryField": "LastRunTime",
-                            "sortDirection": "Descending"
-                        }],
-                        "filter": [{
-                            "field": "None",
-                            "operator": "And",
-                            "options": "None",
-                            "value": [{
-                                "field": "JobKind",
-                                "operator": "Equals",
-                                "value": "Notification",
-                                "options": "None"
-                            }, {
-                                "field": "Status",
-                                "operator": "Equals",
-                                "value": "Deleted",
-                                "options": "InvertOperator"}],
-                        }]
-                    }
-                }
-            }).json()
-            if batch:
-                for n in batch:
-                    if n['relatedItemId'] == nid:
-                        return n
-            else:
-                return None
+    def getById(self, nid):
+        return Notification(
+            api=self,
+            nid=nid,
+            data=self.session.get(f'notification/{nid}').json()
+        )
 
     # Default filter: all
     def _getWithFilter(self, filters=[]):
-
         everything = []
         pageNumber = 1
         pageSize = 25  # That's what Dundas uses as default.
@@ -114,3 +64,53 @@ class Notification:
                 break
 
         return everything
+
+
+class Notification:
+    """Actual notification object."""
+
+    def __init__(self, api, nid, data):
+        self.api = api
+        self.id = nid
+        self.data = data
+
+    def run(self):
+        """Run this notification. There is no output
+        on success."""
+        return self.api.session.post('notification/run', **{'json': [self.id]})
+
+    def isRunning(self):
+        """True if the notification is running, false otherwise."""
+        """Return the Last run of the notification given in ID."""
+        runs = self.api.session.post('job/query/', json={
+            "queryJobsOptions": {
+                "filter": [
+                    {
+                        "field": "JobKind",
+                        "operator": "Equals",
+                        "value": "Notification"
+                    },
+                    {
+                        "field": "relatedItemId",
+                        "operator": "Equals",
+                        "value": self.id
+                    }
+                ],
+                "pageNumber": 1,
+                # If there are more than 1, there is an issue. Let's accept at least 2 to check.
+                "pageSize": 2
+            }
+        }).json()
+        if len(runs) == 0:
+            # It never ran
+            return False
+        elif len(runs) == 1:
+            # https://www.dundas.com/support/api-docs/NET/#html/T_Dundas_BI_WebApi_Models_JobData.htm
+            return runs[0]['status'].lower() == 'running'
+        else:
+            raise RuntimeError(f"More than one job found for notification {self.id}. It does not make sense.")
+
+    def waitForCompletedRun(self):
+        """Wait for the notification in parameter to be complete."""
+        while self.isRunning():
+            time.sleep(15)

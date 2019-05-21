@@ -34,13 +34,13 @@ class Api:
             # if not self._notification:
             apimethod = '_ ' + c
             if not getattr(self, apimethod, None):
-                # from .notification import Notification
+                # from .notification import NotificationApi
 
                 # __module__ is pydundas.rest.api, and relative imports need the package name, which is everything
                 # up to the last dot.
                 pkg = self.__module__.rpartition('.')[0]
                 mod = importlib.import_module('.' + c, pkg)
-                cls = getattr(mod, c.capitalize())
+                cls = getattr(mod, c.capitalize() + 'Api')
 
                 # self._notification = Notification (self.session, self)
                 setattr(self, apimethod, cls(session=self.session, api=self))

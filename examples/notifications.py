@@ -1,5 +1,4 @@
 from pydundas import Api, Session, creds_from_yaml
-import sys
 
 creds = creds_from_yaml('credentials.yaml')
 
@@ -7,26 +6,15 @@ with Session(**creds) as d:
     api = Api(d)
     napi = api.notification()
 
-    # Get all notification with this name.
-    notifs = napi.getExactName('Awesome notification')
-    if len(notifs) > 1:
-        print("More than one notification with this name.")
-        sys.exit(1)
-    elif not notifs:
-        print("No notification with this name.")
-        sys.exit(1)
-
-    # There is only one notification, let's keep its id.
-    nid = notifs[0]['id']
+    # Get notification with this name.
+    n = napi.getByName('Awesome notification')
 
     # Schedule it right now.
-    napi.run(nid)
+    n.run()
 
     # Print some run info.
-    runs = napi.getLastRun(nid)
-    print(runs)
-    print(napi.isRunning(nid))
+    print(n.isRunning())
 
     # As method says.
-    napi.waitForCompletedRun(nid)
+    n.waitForCompletedRun()
     print("Done")

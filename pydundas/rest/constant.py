@@ -8,7 +8,7 @@ class ConstantNameError(KeyError):
     pass
 
 
-class Constant:
+class ConstantApi:
     """Expose Dundas constants with human names"""
 
     # There is not way to get the constants from the rest API.

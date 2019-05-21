@@ -1,4 +1,4 @@
-class Js:
+class JsApi:
     """Get code to generate JavaScript objects to simplify long API calls"""
     def __init__(self, *irrelevantagrs, **irrelevantkwargs):
         pass

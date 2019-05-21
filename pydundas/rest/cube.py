@@ -6,7 +6,8 @@ class CubePathNotUnique(Exception):
     pass
 
 
-class Cube:
+class CubeApi:
+    """Uses the Api to create an actual cube object."""
 
     def __init__(self, session=None, api=None):
         self.session = session
@@ -25,44 +26,11 @@ class Cube:
 
     def getById(self, cid):
         """Get a cube by its id."""
-        return self.session.get('datacube/' + cid).json()
-
-    def warehouse(self, cubeid):
-        """Triggers a warehousing."""
-        self.session.post('datacube/warehouse/' + cubeid, json={})
-
-    def isWarehousing(self, cubeid):
-        runs = self.session.post('job/query/', json={
-            "queryJobsOptions": {
-                "filter": [
-                    {
-                        "field": "JobKind",
-                        "operator": "Equals",
-                        "value": "UpdateDataWarehouse"
-                    },
-                    {
-                        "field": "relatedItemId",
-                        "operator": "Equals",
-                        "value": cubeid
-                    }
-                ],
-                "pageNumber": 1,
-                # If there are more than 1, there is an issue. Let's accept at least 2 to check.
-                "pageSize": 2
-            }
-        }).json()
-        if len(runs) == 0:
-            # It never ran
-            return False
-        elif len(runs) == 1:
-            # https://www.dundas.com/support/api-docs/NET/#html/T_Dundas_BI_WebApi_Models_JobData.htm
-            return runs[0]['status'].lower() == 'running'
-        else:
-            raise RuntimeError(f"More than one job found for warehousing cube {cubeid}. It does not make sense.")
-
-    def waitForWarehousingCompletion(self, cid):
-        while self.isWarehousing(cid):
-            time.sleep(15)
+        return Cube(
+            api=self,
+            cid=cid,
+            data=self.session.get('datacube/' + cid).json()
+        )
 
     def _getRootFolderId(self, pid):
         full_project = self.session.get(f'project/{pid}').json()
@@ -107,3 +75,50 @@ class Cube:
             return matches[0]
         else:
             raise CubePathNotUnique(f"There are more than one cube at path'{path}'.")
+
+
+class Cube:
+    """Actual cube object."""
+
+    def __init__(self, api, cid, data):
+        self.api = api
+        self.id = cid
+        self.data = data
+
+    def warehouse(self):
+        """Triggers a warehousing."""
+        self.api.session.post('datacube/warehouse/' + self.id, json={})
+
+    def isWarehousing(self):
+        """Is this cube being warehoused right now?"""
+        runs = self.api.session.post('job/query/', json={
+            "queryJobsOptions": {
+                "filter": [
+                    {
+                        "field": "JobKind",
+                        "operator": "Equals",
+                        "value": "UpdateDataWarehouse"
+                    },
+                    {
+                        "field": "relatedItemId",
+                        "operator": "Equals",
+                        "value": self.id
+                    }
+                ],
+                "pageNumber": 1,
+                # If there are more than 1, there is an issue. Let's accept at least 2 to check.
+                "pageSize": 2
+            }
+        }).json()
+        if len(runs) == 0:
+            # It never ran
+            return False
+        elif len(runs) == 1:
+            # https://www.dundas.com/support/api-docs/NET/#html/T_Dundas_BI_WebApi_Models_JobData.htm
+            return runs[0]['status'].lower() == 'running'
+        else:
+            raise RuntimeError(f"More than one job found for warehousing cube {self.id}. It does not make sense.")
+
+    def waitForWarehousingCompletion(self):
+        while self.isWarehousing():
+            time.sleep(15)

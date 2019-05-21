@@ -2,7 +2,7 @@ class ProjectNotFound(Exception):
     pass
 
 
-class Project:
+class ProjectApi:
 
     def __init__(self, session=None, api=None):
         self.session = session
