@@ -15,5 +15,3 @@ with Session(**creds) as d:
     print(cube.isWarehousing())
     cube.waitForWarehousingCompletion()
     print('Done')
-
-

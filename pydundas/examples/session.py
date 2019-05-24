@@ -70,4 +70,3 @@ except requests.exceptions.HTTPError as e:
 print("\nNo context manager and you forget to logout.")
 print("I'm not that mean and I won't burn through your elastic hours, but be careful " +
       "and that's why context the manager is awesome.")
-

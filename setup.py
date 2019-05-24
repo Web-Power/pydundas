@@ -16,21 +16,20 @@ requirements = [
 ]
 
 setuptools.setup(
-     name='pydundas',
-     version=pydundas_ver,
-     license='MIT',
-     scripts=['example.py'],
-     author="Guillaume Roger",
-     author_email="datatech@webpower.nl",
-     description="Manage sessions for Dundas api.",
-     long_description=long_description,
-     long_description_content_type="text/markdown",
-     url="https://github.com/Web-Power/pydundas",
-     packages=setuptools.find_packages(),
-     install_requires=requirements,
-     classifiers=[
-         "Programming Language :: Python :: 3",
-         "License :: OSI Approved :: MIT License",
-         "Operating System :: OS Independent",
-     ],
+    name='pydundas',
+    version=pydundas_ver,
+    license='MIT',
+    author="Guillaume Roger",
+    author_email="datatech@webpower.nl",
+    description="Manage sessions for Dundas api.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/Web-Power/pydundas",
+    packages=setuptools.find_packages(),
+    install_requires=requirements,
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
  )

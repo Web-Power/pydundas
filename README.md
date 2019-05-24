@@ -44,7 +44,7 @@ months anyway I did not look into it.
 
 # Examples
 
-You can see all the [examples](https://github.com/lomignet/pydundas/blob/master/exampples) in one directory.
+You can see all the [examples](https://github.com/lomignet/pydundas/blob/master/pydundas/examples) in one directory.
 
 All the examples below assume a `url`, `user` and `pwd` variables.
 
