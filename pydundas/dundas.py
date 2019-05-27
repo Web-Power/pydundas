@@ -50,6 +50,8 @@ class Session:
             logger.addHandler(h)
         self.logger = logger
         self.setLogLevel(loglevel)
+        # Shut up urllib3
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
 
     def __enter__(self):
         """Context manager entry point."""

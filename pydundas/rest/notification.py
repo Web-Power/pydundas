@@ -97,4 +97,5 @@ class Notification:
     def waitForCompletedRun(self):
         """Wait for the notification in parameter to be complete."""
         while self.isRunning():
-            time.sleep(15)
+            # Notification sending is quick, let's check often.
+            time.sleep(2)
