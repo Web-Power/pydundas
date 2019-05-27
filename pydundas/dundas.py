@@ -156,3 +156,8 @@ class Session:
         r = self.s.delete(self.endpoint + url, **self.extend_with_sessionid(kwargs))
         self._raise_for_status(r)
         return r
+
+    def put(self, url, **kwargs):
+        r = self.s.put(self.endpoint + url, **self.extend_with_sessionid(kwargs))
+        self._raise_for_status(r)
+        return r

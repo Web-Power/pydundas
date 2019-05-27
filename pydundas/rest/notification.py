@@ -1,4 +1,5 @@
 import time
+from copy import deepcopy
 
 
 class NotificationNameNotUnique(Exception):
@@ -100,4 +101,64 @@ class Notification:
 
     def _get_data(self):
         return self.api.session.get(f'notification/{self.id}').json()
+
+    def get_subject(self):
+        return self.data["deliverySettings"]["subjectTemplate"]
+
+    def set_subject(self, subj):
+        """
+        Update subject of notification.
+        """
+
+        data = deepcopy(self.data)
+        data['deliverySettings']['subjectTemplate'] = subj
+        self._update(data)
+
+    def get_body(self):
+        return self.data["deliverySettings"]["messageTemplate"]
+
+    def set_body(self, subj):
+        """
+        Update subject of notification.
+        """
+
+        data = deepcopy(self.data)
+        data['deliverySettings']['messageTemplate'] = subj
+        self._update(data)
+
+    def _walk_and_update_bloody_numerics(self, e):
+        # Updates the object in place.
+        if isinstance(e, dict):
+            if e.get('__classType', None) == "dundas.data.SingleNumberValue":
+                if e['value'] is not None:
+                    # If you have an exception here, it might be because you have a float, not an int.
+                    # I do not expect it, though.
+                    e['value'] = int(e['value'])
+            else:
+                for k, v in e.items():
+                    self._walk_and_update_bloody_numerics(v)
+        elif isinstance(e, list):
+            for v in e:
+                self._walk_and_update_bloody_numerics(v)
+        else:
+            # no dict, no list. Could be a string, a number, None... In any case, we do not care
+            pass
+
+    def _update(self, data):
+        """
+        To update a notification, you can just GET its data, change one field and PUT it back.
+        Except.
+        Except that for some elements, dundas gives a string back (eg. "3") but *requires* an int (ie. 3).
+        Except that the item schedule that you GET must be replaced by its child scheduleRule when you PUT.
+        """
+
+        data['scheduleRule'] = data.pop('schedule')['scheduleRule']
+        data['runImmediately'] = False
+        self._walk_and_update_bloody_numerics(data)
+
+        self.api.session.put(f'notification/{self.id}', **{'json': data})
+        # The notification has been modified. Let's reload its data.
+        self._data_load()
+
+        return
 
