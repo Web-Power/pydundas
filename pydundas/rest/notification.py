@@ -132,7 +132,7 @@ class Notification:
             if e.get('__classType', None) == "dundas.data.SingleNumberValue":
                 if e['value'] is not None:
                     # If you have an exception here, it might be because you have a float, not an int.
-                    # I do not expect it, though.
+                    # I do not expect it, though so I do not want to handle it (yet) not knowing what to expect.
                     e['value'] = int(e['value'])
             else:
                 for k, v in e.items():
@@ -161,4 +161,3 @@ class Notification:
         self._data_load()
 
         return
-
