@@ -15,6 +15,7 @@ with Session(**creds) as d:
 
     n.set_subject("Wonderful subject")
     n.set_body("Meaningful body")
+    n.update()
 
     print(n.get_subject())
     print(n.get_body())

@@ -68,6 +68,9 @@ class Notification:
         self.api = api
         self.id = nid
         self._data_load()
+        # When updating parts of the notification, all changes are added in there and can be 'commited' via update()
+        # to prevent having multiple small updates.
+        self.updated_data = None
 
     def run(self):
         """Run this notification. There is no output
@@ -110,9 +113,10 @@ class Notification:
         Update subject of notification.
         """
 
-        data = deepcopy(self.data)
-        data['deliverySettings']['subjectTemplate'] = subj
-        self._update(data)
+        if not self.updated_data:
+            self.updated_data = deepcopy(self.data)
+
+        self.updated_data['deliverySettings']['subjectTemplate'] = subj
 
     def get_body(self):
         return self.data["deliverySettings"]["messageTemplate"]
@@ -121,30 +125,31 @@ class Notification:
         """
         Update subject of notification.
         """
+        if not self.updated_data:
+            self.updated_data = deepcopy(self.data)
 
-        data = deepcopy(self.data)
-        data['deliverySettings']['messageTemplate'] = subj
-        self._update(data)
+        self.updated_data['deliverySettings']['messageTemplate'] = subj
 
     def _walk_and_update_bloody_numerics(self, e):
-        # Updates the object in place.
         if isinstance(e, dict):
-            if e.get('__classType', None) == "dundas.data.SingleNumberValue":
-                if e['value'] is not None:
+            # Trying very hard to not touch the initial object
+            newe = deepcopy(e)
+            if newe.get('__classType', None) == "dundas.data.SingleNumberValue":
+                if newe['value'] is not None:
                     # If you have an exception here, it might be because you have a float, not an int.
                     # I do not expect it, though so I do not want to handle it (yet) not knowing what to expect.
-                    e['value'] = int(e['value'])
+                    newe['value'] = int(newe['value'])
+                # I know that such a dict is a leaf
+                return newe
             else:
-                for k, v in e.items():
-                    self._walk_and_update_bloody_numerics(v)
+                return {k: self._walk_and_update_bloody_numerics(v) for k, v in e.items()}
         elif isinstance(e, list):
-            for v in e:
-                self._walk_and_update_bloody_numerics(v)
+            return [self._walk_and_update_bloody_numerics(v) for v in e]
         else:
             # no dict, no list. Could be a string, a number, None... In any case, we do not care
-            pass
+            return e
 
-    def _update(self, data):
+    def update(self):
         """
         To update a notification, you can just GET its data, change one field and PUT it back.
         Except.
@@ -152,12 +157,13 @@ class Notification:
         Except that the item schedule that you GET must be replaced by its child scheduleRule when you PUT.
         """
 
-        data['scheduleRule'] = data.pop('schedule')['scheduleRule']
-        data['runImmediately'] = False
-        self._walk_and_update_bloody_numerics(data)
+        self.updated_data['scheduleRule'] = self.updated_data.pop('schedule')['scheduleRule']
+        self.updated_data['runImmediately'] = False
+        put_ready = self._walk_and_update_bloody_numerics(self.updated_data)
 
-        self.api.session.put(f'notification/{self.id}', **{'json': data})
-        # The notification has been modified. Let's reload its data.
+        self.api.session.put(f'notification/{self.id}', **{'json': put_ready})
+        # The notification has been modified. Let's reload its data and remove old updates.
+        self.updated_data = None
         self._data_load()
 
         return

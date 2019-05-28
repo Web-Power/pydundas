@@ -1,8 +1,9 @@
 import json
 import unittest
+from copy import deepcopy
+from mock import MagicMock
 from pydundas import Api
 from pydundas.rest.notification import Notification
-from mock import MagicMock
 
 
 class TestNotification(unittest.TestCase):
@@ -67,12 +68,16 @@ class TestNotification(unittest.TestCase):
         api = MagicMock()
         n = Notification(nid=42, api=api)
         for c in self._numeric_cases():
-            # Tofix: updates inplace
-            n._walk_and_update_bloody_numerics(c['src'])
+            initial = deepcopy(c['src'])
             self.assertEqual(
-                json.dumps(c['src']),
+                json.dumps(n._walk_and_update_bloody_numerics(c['src'])),
                 json.dumps(c['dst']),
                 f"Case {c['what']} is going wrong"
+            )
+            self.assertEqual(
+                json.dumps(initial),
+                json.dumps(c['src']),
+                f"The object should not be modified, but it was."
             )
 
     def test__walk_and_update_bloody_numerics_raises_ValueError_for_float(self):
