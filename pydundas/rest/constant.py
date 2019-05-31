@@ -8,7 +8,7 @@ class ConstantNameError(KeyError):
     pass
 
 
-class Constant:
+class ConstantApi:
     """Expose Dundas constants with human names"""
 
     # There is not way to get the constants from the rest API.
@@ -234,7 +234,7 @@ class Constant:
         "WEB_APP_MODULE_ID": "21259d43-ee4c-4b06-b73f-c9c2cdce60c6",
     }
 
-    def __init__(self, *irrelevantargs):
+    def __init__(self, *irrelevantargs, **irrelevantkwargs):
         # Move constants one level up for easy access.
         for name, uuid in self.constants.items():
             setattr(self, name, uuid)

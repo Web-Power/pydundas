@@ -42,6 +42,7 @@ cleanbuild:
 	rm -rf $(WORKON_HOME)/build
 	rm -rf $(WORKON_HOME)/.coverage
 	rm -rf $(WORKON_HOME)/*egg-info
+	rm -rf $(WORKON_HOME)/htmlcov
 
 envsetup:
 ifeq ($(ENVMAN), conda)
@@ -75,6 +76,23 @@ test: unittest pep8
 
 ## Packaging
 
+howto:
+	@echo make devinit
+	@echo make pypiversion
+	@echo '# Be sure you bump the version if needed'
+	@echo make package
+	@echo make testpypi
+	@echo 'wait for the new version to appear there:'
+	@echo make pypiversion
+	@echo make testtestinstall
+	@echo '# Once test install works'
+	@echo make pypiversion
+	@echo make pypi
+	@echo 'wait for the bew version to appear there:'
+	@echo make pypiversion
+	@echo testinstall
+	@echo congrats, go get a tea.
+
 package: cleanbuild
 	@echo Building Pydundas version $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 	$(PY3) setup.py sdist bdist_wheel
@@ -90,7 +108,7 @@ pypiversion:
 
 
 testpypi:
-# Note: testpypi is defined in my $HOME/.pypitrc. Otherwise, replace --repository testpypi with
+# Note: testpypi is defined in my $HOME/.pypirc. Otherwise, replace --repository testpypi with
 # --repository-url https://test.pypi.org/legacy/
 	@echo Latest version of Pydundas on test.pypi before upload: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	$(PY3) -m twine upload --repository testpypi dist/*
@@ -108,7 +126,7 @@ testtestinstall:
 	@echo Module version: $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 	@echo Version on test Pypi: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	@echo Version in test env: $(shell cd $(TESTENV) && $(TESTENV)/bin/pip3 freeze | grep -i pydundas).
-# Should not error out.
+	# Should not error out.
 	cd $(TESTENV) && $(TESTENV)/bin/python3 -c "from pydundas import __version__ as v; from pydundas import Session; print(v); Session(user='u', pwd='p', url='u')"
 
 pypi:

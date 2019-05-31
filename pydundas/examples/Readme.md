@@ -1,2 +1,2 @@
 The files here are a bunch of examples, to show how the 
-api can to be used.
+api can be used.
