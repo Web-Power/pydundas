@@ -135,11 +135,11 @@ class Session:
         return kwargs
 
     def _raise_for_status(self, r):
-        """Log body of the request in case of HTTPError."""
+        """Log body of the request in case of HTTPError. It might contain some explanation of what went wrong."""
         try:
             r.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            self.logger.info(r.json())
+            self.logger.error(r.json())
             raise
 
     def get(self, url, **kwargs):

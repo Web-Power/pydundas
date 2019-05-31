@@ -95,7 +95,7 @@ For example, to find the ID of a project:
 from pydundas import Api, Session, creds_from_yaml
 
 with Session(**creds_from_yaml('credentials.yaml')) as d:
-    a=Api(d)
+    api=Api(d)
     project = a.project()
     print(project.getProjectIdByName('DP'))
 ```

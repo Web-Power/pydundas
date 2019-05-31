@@ -82,7 +82,7 @@ howto:
 	@echo '# Be sure you bump the version if needed'
 	@echo make package
 	@echo make testpypi
-	@echo 'wait for the bew version to appear there:'
+	@echo 'wait for the new version to appear there:'
 	@echo make pypiversion
 	@echo make testtestinstall
 	@echo '# Once test install works'

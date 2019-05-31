@@ -33,7 +33,7 @@ class TestConstant(unittest.TestCase):
             c = Api(None).constant()
             self.assertRaises(ConstantIdError, c.getNamesById, 'unknown id')
 
-    def test_get_by_wrong_name_returns_ConstantNameError(self):
+    def test_get_by_wrong_name_raises_ConstantNameError(self):
         with patch.dict(ConstantApi.constants, self.mocked_constants, clear=True):
             c = Api(None).constant()
             self.assertRaises(ConstantNameError, c.getIdByName, 'unknown name')

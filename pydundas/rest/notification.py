@@ -42,14 +42,12 @@ class NotificationApi:
     # Default filter: all
     def _getWithFilter(self, filters=[]):
         everything = []
-        pageNumber = 1
-        pageSize = 25  # That's what Dundas uses as default.
         while True:
             batch = self.session.post('notification/query', **{
                 # Data snooped from the web UI
                 'json': {
-                    "pageNumber": pageNumber,
-                    "pageSize": pageSize,
+                    "pageNumber": 1,
+                    "pageSize": 25,  # That's what Dundas uses as default.
                     "orderBy": [{
                         "notificationQueryField": "Name",
                         "sortDirection": "Ascending"
