@@ -30,3 +30,12 @@ class JsApi:
     @classmethod
     def SingleFalseValue(cls, parameterId):
         return cls.SingleBooleanValue(parameterId, False)
+
+    @classmethod
+    def notificationRecipient(cls, email, isUnsubscribeAllowed=True):
+        return {
+            "__classType": "dundas.notifications.Recipient",
+            "email": email,
+            "isUnsubscribeAllowed": isUnsubscribeAllowed,
+            "viewOverrides": []
+        }

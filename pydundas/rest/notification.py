@@ -37,14 +37,15 @@ class NotificationApi:
 
     # Default filter: all
     def _getIdsWithFilter(self, filters=[]):
-        # Note: the returned data from /query is not the same as GET notification/id.
+        # Note: the returned data from /query is incomplete.
         # That's why this method only returns IDs, the actual full data can be retrieved later.
         everything = []
+        pageNumber = 1
         while True:
             batch = self.session.post('notification/query', **{
                 # Data snooped from the web UI
                 'json': {
-                    "pageNumber": 1,
+                    "pageNumber": pageNumber,
                     "pageSize": 25,  # That's what Dundas uses as default.
                     "orderBy": [{
                         "notificationQueryField": "Name",
@@ -112,10 +113,7 @@ class Notification:
         """
         Update subject of notification.
         """
-
-        if not self.updated_data:
-            self.updated_data = deepcopy(self.data)
-
+        self._prepare_data_for_update()
         self.updated_data['deliverySettings']['subjectTemplate'] = subj
 
     def get_body(self):
@@ -123,12 +121,36 @@ class Notification:
 
     def set_body(self, subj):
         """
-        Update subject of notification.
+        Update body of notification.
         """
+        self._prepare_data_for_update()
+        self.updated_data['deliverySettings']['messageTemplate'] = subj
+
+    def get_recipients(self):
+        """Returns all recipients."""
+        return self.data['deliverySettings']['recipients']
+
+    def set_recipients(self, rcpt_list):
+        """Completely replaces recipient list.
+        Can be used to remove them all by passing [].
+        The caller needs to take care of passing the right object(s).
+        """
+        if not (isinstance(rcpt_list, list) or isinstance(rcpt_list, tuple)):
+            raise ValueError('set_recipients() expects a list of recipients. It got neither a list nor a tuple.')
+
+        self._prepare_data_for_update()
+        self.updated_data['deliverySettings']['recipients'] = rcpt_list
+
+    def add_email_recipient(self, email):
+        """Add one email recipient to the recipient list."""
+        self._prepare_data_for_update()
+        self.updated_data['deliverySettings']['recipients'].append(
+            self.api.api.js().notificationRecipient(email)
+        )
+
+    def _prepare_data_for_update(self):
         if not self.updated_data:
             self.updated_data = deepcopy(self.data)
-
-        self.updated_data['deliverySettings']['messageTemplate'] = subj
 
     def _walk_and_update_bloody_numerics(self, e):
         if isinstance(e, dict):
@@ -156,7 +178,6 @@ class Notification:
         Except that for some elements, dundas gives a string back (eg. "3") but *requires* an int (ie. 3).
         Except that the item schedule that you GET must be replaced by its child scheduleRule when you PUT.
         """
-
         self.updated_data['scheduleRule'] = self.updated_data.pop('schedule')['scheduleRule']
         self.updated_data['runImmediately'] = False
         put_ready = self._walk_and_update_bloody_numerics(self.updated_data)
