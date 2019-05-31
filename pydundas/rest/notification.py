@@ -11,10 +11,10 @@ class NotificationApi:
 
     def __init__(self, session=None, api=None):
         self.session = session
-        self.api = api
+        self.factory = api
 
     def getByName(self, name):
-        """Get all notification with this exact name. Case insensitive."""
+        """Get all notifications with this exact name. Case insensitive."""
         everything = self._getIdsWithFilter(filters=[{
             "field": "Name",
             "operator": "Equals",
@@ -27,7 +27,7 @@ class NotificationApi:
         elif len(everything) == 1:
             return self.getById(everything[0])
         else:
-            raise NotificationNameNotUnique(f"There are more than one notification with name '{name}'.")
+            raise NotificationNameNotUnique(f"There is more than one notification with name '{name}'.")
 
     def getById(self, nid):
         return Notification(
@@ -80,7 +80,7 @@ class Notification:
 
     def isRunning(self):
         """True if the notification is running, False otherwise."""
-        japi = self.api.api.job()
+        japi = self.api.factory.job()
         run = japi.getByIdAndType(
             kind=japi.NOTIFICATION,
             relatedId=self.id
@@ -145,7 +145,7 @@ class Notification:
         """Add one email recipient to the recipient list."""
         self._prepare_data_for_update()
         self.updated_data['deliverySettings']['recipients'].append(
-            self.api.api.js().notificationRecipient(email)
+            self.api.factory.js().notificationRecipient(email)
         )
 
     def _prepare_data_for_update(self):

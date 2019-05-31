@@ -10,6 +10,7 @@ with Session(**creds) as d:
     # Get notification with this name.
     n = napi.getByName('Awesome notification')
 
+    print("Before:")
     print(n.get_subject())
     print(n.get_body())
     print(n.get_recipients())
@@ -19,10 +20,13 @@ with Session(**creds) as d:
     n.set_recipients([])
     n.add_email_recipient('hi@there.com')
 
+    print("Updating.")
     n.update()
 
+    print("After:")
     print(n.get_subject())
     print(n.get_body())
+    print(n.get_recipients())
 
     # Schedule it right now.
     n.run()

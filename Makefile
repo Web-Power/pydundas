@@ -88,7 +88,7 @@ howto:
 	@echo '# Once test install works'
 	@echo make pypiversion
 	@echo make pypi
-	@echo 'wait for the bew version to appear there:'
+	@echo 'wait for the new version to appear there:'
 	@echo make pypiversion
 	@echo testinstall
 	@echo congrats, go get a tea.

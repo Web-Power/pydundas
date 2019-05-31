@@ -6,7 +6,7 @@ class ProjectApi:
 
     def __init__(self, session=None, api=None):
         self.session = session
-        self.api = api
+        self.factory = api
 
     def getProjectIdByName(self, name):
         """Return a project Id based on its exact name."""

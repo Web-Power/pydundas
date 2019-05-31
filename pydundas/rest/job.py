@@ -11,14 +11,14 @@ class JobApi:
 
     def __init__(self, session=None, api=None):
         self.session = session
-        self.api = api
+        self.factory = api
 
     def getByIdAndType(self, relatedId, kind):
         """Get a job by ID of its relation (notification or cube) and kind. Expects a unique result."""
         if kind not in self.known_kinds:
             raise UnknowJobKindException(f"Jobkind {kind} unknown. Expects one of {self.known_kinds}.")
 
-        jobs = self.api.session.post('job/query/', json={
+        jobs = self.session.post('job/query/', json={
             "queryJobsOptions": {
                 "filter": [
                     {

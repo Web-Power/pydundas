@@ -30,10 +30,10 @@ class TestNotification(unittest.TestCase):
                 'src': {}, 'dst': {}
             }, {
                 'what': 'Non empty dict',
-                'src': {'a': 2, 3: '4'}, 'dst': {'a': 2, 3: '4'}
+                'src': {1: 2, 3: '4'}, 'dst': {1: 2, 3: '4'}
             }, {
                 'what': 'Nested dict',
-                'src': {1: {1: 3}, 'a': 42}, 'dst': {1: {1: 3}, 'a': 42}
+                'src': {'b': {1: 3}, 'a': 42}, 'dst': {'b': {1: 3}, 'a': 42}
             },
 
             {
@@ -70,13 +70,13 @@ class TestNotification(unittest.TestCase):
         for c in self._numeric_cases():
             initial = deepcopy(c['src'])
             self.assertEqual(
-                json.dumps(n._walk_and_update_bloody_numerics(c['src'])),
-                json.dumps(c['dst']),
+                json.dumps(n._walk_and_update_bloody_numerics(c['src']), sort_keys=True),
+                json.dumps(c['dst'], sort_keys=True),
                 f"Case {c['what']} is going wrong"
             )
             self.assertEqual(
-                json.dumps(initial),
-                json.dumps(c['src']),
+                json.dumps(initial, sort_keys=True),
+                json.dumps(c['src'], sort_keys=True),
                 f"The object should not be modified, but it was."
             )
 
