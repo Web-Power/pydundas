@@ -11,11 +11,11 @@ class CubeApi:
 
     def __init__(self, session=None, api=None):
         self.session = session
-        self.api = api
+        self.factory = api
 
     def getByPath(self, project, path):
         """Return the one cube matching the path, or None."""
-        pid = self.api.project().getProjectIdByName(project)
+        pid = self.factory.project().getProjectIdByName(project)
         root_dir, root_id = self._getRootFolderId(pid)
         cubefile = self._getFileByName(
             # If a path starts with '/a' all preceding components are removed
@@ -29,7 +29,6 @@ class CubeApi:
         return Cube(
             api=self,
             cid=cid,
-            data=self.session.get('datacube/' + cid).json()
         )
 
     def _getRootFolderId(self, pid):
@@ -80,10 +79,13 @@ class CubeApi:
 class Cube:
     """Actual cube object."""
 
-    def __init__(self, api, cid, data):
+    def __init__(self, api, cid):
         self.api = api
         self.id = cid
-        self.data = data
+        self.data = self._get_data()
+
+    def _get_data(self):
+        return self.api.session.get('datacube/' + self.id).json()
 
     def warehouse(self):
         """Triggers a warehousing."""
@@ -91,7 +93,7 @@ class Cube:
 
     def isWarehousing(self):
         """Is this cube being warehoused right now?"""
-        japi = self.api.api.job()
+        japi = self.api.factory.job()
         run = japi.getByIdAndType(
             kind=japi.WAREHOUSE,
             relatedId=self.id
