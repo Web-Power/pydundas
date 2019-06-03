@@ -27,7 +27,7 @@ need and use, so I do not expect to have everything ported on my own.
 
 # Installation
 
-Simply with pip:
+Simply with pip, from [pypi](https://pypi.org/project/pydundas/):
 
 ```bash
 python3 -m pip install pydundas

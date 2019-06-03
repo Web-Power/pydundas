@@ -90,7 +90,7 @@ howto:
 	@echo make pypi
 	@echo 'wait for the new version to appear there:'
 	@echo make pypiversion
-	@echo testinstall
+	@echo make testinstall
 	@echo congrats, go get a tea.
 
 package: cleanbuild
