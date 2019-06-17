@@ -96,6 +96,22 @@ class Cube:
         """Return proper JSONised data."""
         return json.dumps(self.data)
 
+    def is_checked_out(self):
+        # The key 'isCheckedOut' does not exist if the cube is not checked out.
+        return self.data.get('isCheckedOut', False)
+
+    def checkout(self):
+        self.api.session.put('file/checkout/' + self.id, json={}).json()
+
+    def undocheckout(self):
+        self.api.session.post('file/undocheckout/' + self.id, json={}).json()
+
+    def clear_cache(self):
+        """Cache is cleared by updating the 'Last modified date'."""
+        # Technically another option would be checkout/undo checkout, but then the cube cannot be
+        # checked out already for this to work.
+        self.api.session.put(f'file/touch/{self.id}', json={})
+
     def isWarehousing(self):
         """Is this cube being warehoused right now?"""
         japi = self.api.factory.job()
