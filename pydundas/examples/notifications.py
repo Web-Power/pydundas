@@ -10,6 +10,7 @@ with Session(**creds) as d:
     # Get notification with this name.
     n = napi.getByName('Awesome notification')
 
+    print(n.json())
     print("Before:")
     print(n.get_subject())
     print(n.get_body())

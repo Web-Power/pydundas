@@ -10,7 +10,12 @@ with Session(**creds) as d:
     if cube is None:
         print("Gotcha, no cube named like that.")
         sys.exit(1)
-    print(json.dumps(cube.data))
+    print(cube.json())
+    if not cube.is_checked_out():
+        print("We can work")
+        cube.checkout()
+        cube.undocheckout()
+
     cube.warehouse()
     print(cube.isWarehousing())
     cube.waitForWarehousingCompletion()
