@@ -1,3 +1,4 @@
+import json
 import time
 from copy import deepcopy
 
@@ -188,3 +189,7 @@ class Notification:
         self._data_load()
 
         return
+
+    def json(self):
+        """Return proper JSONised data."""
+        return json.dumps(self.data)

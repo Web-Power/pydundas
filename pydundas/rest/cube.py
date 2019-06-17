@@ -1,3 +1,4 @@
+import json
 import time
 import os
 
@@ -90,6 +91,10 @@ class Cube:
     def warehouse(self):
         """Triggers a warehousing."""
         self.api.session.post('datacube/warehouse/' + self.id, json={})
+
+    def json(self):
+        """Return proper JSONised data."""
+        return json.dumps(self.data)
 
     def isWarehousing(self):
         """Is this cube being warehoused right now?"""
