@@ -6,6 +6,7 @@ class Api:
     apis = [
         'constant',
         'cube',
+        'health',
         'job',
         'js',
         'notification',

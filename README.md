@@ -21,7 +21,7 @@ Each and every call to the API needs to have the same `sessionId` parameter. Thi
 shortcuts for you for `get`, `post` and `delete`, to make your life easier. You do not need
 to repeat the host, api path prefix or sessionId every single time.
 
-Some API calls are ported and might have helper methods. I am updating the module based on what I 
+Some API calls are ported and might have helper methods. I am updating the module based on what I
 need and use, so I do not expect to have everything ported on my own.
 
 
@@ -81,24 +81,13 @@ with Session(**creds) as d:
 ```python
 with Session(user=user, pwd=pwd, url=url) as d:
         d.get('you/know/nothing')
-``` 
+```
 output:
 ```
 404 Client Error: Not Found for url: https://winterfell.got/api/you/know/nothing?sessionId=fbeb7897-5981-412b-a981-7783f88894bd
 ```
 
 # API calls
-
-## Project
-For example, to find the ID of a project:
-```python
-from pydundas import Api, Session, creds_from_yaml
-
-with Session(**creds_from_yaml('credentials.yaml')) as d:
-    api=Api(d)
-    project = a.project()
-    print(project.getProjectIdByName('DP'))
-```
 
 ## Constant
 Most constants can be used via their human-readable name.
@@ -114,6 +103,35 @@ with Session(**creds_from_yaml('credentials.yaml')) as d:
     print(c.getIdByName('STANDARD_EXCEL_EXPORT_PROVIDER_ID'))
 ```
 
+## Cube
+You can warehouse a cube, and get some information about it:
+```python
+with Session(**creds) as d:
+    api = Api(d)
+    capi = api.cube()
+    cube = capi.getByPath('Awesome Project', '/relevant/path')
+    cube = capi.getByPath('DP', '/CustomReports/2daysent/1mailing sendouts')
+    if cube is None:
+        print("Gotcha, no cube named like that.")
+        sys.exit(1)
+    print(cube.json())
+    print(cube.is_checked_out())
+
+    cube.warehouse()
+    print(cube.isWarehousing())
+    cube.waitForWarehousingCompletion()
+```
+## Health
+You can run all checks, and fix the failing one:
+```python
+with Session(**creds, loglevel='warn') as d:
+    api = Api(d)
+    hapi = api.health()
+    failings = hapi.check(allchecks=True)
+    print(failings)
+    for f in failings:
+        hapi.check([f], fix=True)
+```
 ## Notification
 
 You can get a notification by its name and then run it.
@@ -127,10 +145,21 @@ You can get a notification by its name and then run it.
     napi.run(notif[0]['id'])
 ```
 
+## Project
+For example, to find the ID of a project:
+```python
+from pydundas import Api, Session, creds_from_yaml
+
+with Session(**creds_from_yaml('credentials.yaml')) as d:
+    api=Api(d)
+    project = a.project()
+    print(project.getProjectIdByName('DP'))
+```
+
 # Develop
 
 You can either use `conda` or `virtualenv`. Most relevant commands are in the Makefile.
-First edit the first line of the makefile to choose if you want to use conda or virtualenv. 
+First edit the first line of the makefile to choose if you want to use conda or virtualenv.
 
 ```bash
 # Build an environment with all dependencies
