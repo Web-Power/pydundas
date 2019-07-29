@@ -6,5 +6,7 @@ creds = creds_from_yaml('credentials.yaml')
 with Session(**creds, loglevel='warn') as d:
     api = Api(d)
     hapi = api.health()
-    # hapi.heck return True is all is fine, which needs to be transformed to not 0, hence the not.
-    sys.exit(not hapi.check(allchecks=True))
+    failings = hapi.check(allchecks=True)
+    print(failings)
+    for f in failings:
+        hapi.check([f], fix=True)

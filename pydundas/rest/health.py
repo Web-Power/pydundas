@@ -57,7 +57,7 @@ class HealthApi:
     def check(self, checks=[], fix=False, allchecks=False):
         """
             Run specific checks or all checks if all is True.
-            :returns True if all is fine, False otherwise.
+            :returns List of failing checks IDs. Can be empty.
         """
         if allchecks:
             checks = list(self.all_checks.keys())
@@ -78,13 +78,12 @@ class HealthApi:
         # The output is quoted, and it's not directly valid as query parameter for the GET.
         contextId = trigger.text.replace('"', '')
         status = self._wait_for_completion(contextId)
-        return self.all_good(status)
+        return self.find_failing(status)
 
     def _wait_for_completion(self, contextId):
         """Starting a healthcheck is actually on triggering them. This waits for them to complete."""
 
         # If the checks are not done after 30 seconds something is really wrong
-        # TODO CHECK FOR FIX
         timeout = 30
         while True:
             timeout -= 1
@@ -101,7 +100,7 @@ class HealthApi:
             if 'healthCheckResult' in status:
                 return status
 
-    def all_good(self, status):
+    def find_failing(self, status):
         result = status['healthCheckResult']
         if result.get('totalWarnings', 0) + result.get('totalErrors', 0) > 0:
             # Example:
@@ -116,23 +115,25 @@ class HealthApi:
             #       "severity": "Information",
             #       "text": "Beginning health check."
             #     },
+            failings = {}
             for hc in status['healthChecks']:
                 if hc["__classType"] == "dundas.health.HealthChecks":
                     for hcm in hc['value']:
                         if hcm["__classType"] == "dundas.health.HealthCheckMessage":
                             # https://www.dundas.com/support/api-docs/NET/#html/T_Dundas_BI_WebApi_Models_HealthCheckMessageData.htm
                             if hcm['severity'].lower() in ('warning', 'error'):
+                                failings[hcm['checkId']] = ''
                                 self.session.logger.warn(
-                                    "{severity} for {idd} (desc): {msg}.".format(
+                                    "{severity} for {id} (desc): {msg}.".format(
                                         severity=hcm['severity'],
                                         id=hcm['checkId'],
                                         desc=self.all_checks[hcm['checkId']],
                                         msg=hcm['text'],
                                     )
                                 )
-            return False
+            return list(failings.keys())
         else:
-            return True
+            return []
 
     def fix(self, checks=[], allchecks=False):
         """Fix one or more checks"""
