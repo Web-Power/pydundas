@@ -78,6 +78,8 @@ test: unittest pep8
 
 howto:
 	@echo make devinit
+	@echo make pep8
+	@echo make unittest
 	@echo make pypiversion
 	@echo '# Be sure you bump the version if needed'
 	@echo make package
@@ -119,7 +121,7 @@ testpypi:
 	@echo Latest version of Pydundas on test.pypi before upload: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	$(PY3) -m twine upload --repository testpypi dist/*
 	@echo Latest version of Pydundas on test.pypi after upload: $(shell curl -s 'https://test.pypi.org/pypi/pydundas/json' | jq -r '.info.version').
-	@echo Note that it can take a few minutes to get the new version available. Check with make pypiversions.
+	@echo Note that it can take a few minutes to get the new version available. Check with make pypiversion.
 
 # Yes, test test: test the install from the test pypi repo.
 testtestinstall:
@@ -139,7 +141,7 @@ pypi:
 	@echo Latest version of Pydundas on pypi before upload: $(shell curl -s 'https://pypi.org/pypi/pydundas/json' | jq -r '.info.version').
 	$(PY3) -m twine upload --repository pypi dist/*
 	@echo Latest version of Pydundas on pypi after upload: $(shell curl -s 'https://pypi.org/pypi/pydundas/json' | jq -r '.info.version').
-	@echo Note that it can take a few minutes to get the new version available. Check with make pypiversions.
+	@echo Note that it can take a few minutes to get the new version available. Check with make pypiversion.
 
 # Test install from the real pypi repo.
 testinstall:
