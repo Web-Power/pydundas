@@ -99,6 +99,12 @@ package: cleanbuild
 	@echo Built Pydundas version $(shell $(PY3) -c 'from pydundas import __version__ as v; print(v)').
 
 
+## Conda packaging
+
+condapackage:
+	conda install --yes $(PENV) conda-build anaconda-client
+	./env/bin/conda skeleton pypi --output-dir condarecipes pydundas
+
 ## Upload
 
 pypiversion:
