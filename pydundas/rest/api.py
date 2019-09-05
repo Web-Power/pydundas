@@ -4,6 +4,7 @@ import importlib
 class Api:
 
     apis = [
+        'account',
         'constant',
         'cube',
         'health',
