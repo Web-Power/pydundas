@@ -7,6 +7,7 @@ class Api:
         'account',
         'constant',
         'cube',
+        'file',
         'health',
         'job',
         'js',
