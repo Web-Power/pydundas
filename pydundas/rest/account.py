@@ -5,4 +5,5 @@ class AccountApi:
         self.factory = api
 
     def is_api_account(self, account_id):
-        return self.session.get('account/' + account_id).json()['isApiAccount']
+        account = self.session.get('account/' + account_id).json()
+        return account.get('isApiAccount', False)
