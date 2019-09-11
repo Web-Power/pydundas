@@ -7,6 +7,8 @@ class Api:
         'account',
         'constant',
         'cube',
+        'dashboard',
+        'export',
         'file',
         'health',
         'job',
