@@ -66,5 +66,3 @@ class ExportApi:
         from io import BytesIO
         from PIL import Image
         i = Image.open(BytesIO(img.content)).show()
-
-

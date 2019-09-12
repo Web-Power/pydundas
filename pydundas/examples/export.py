@@ -18,7 +18,6 @@ with Session(**creds) as d:
     # Could be of course pdf or something else.
     img_provider = api.constant().getIdByName("STANDARD_IMAGE_EXPORT_PROVIDER_ID")
 
-
     param_value = 'actual relevant value'
     param_name = 'script name of your prarameter'
 
@@ -37,5 +36,3 @@ with Session(**creds) as d:
     )
     # It can then be downloaded (or displayed with .show_image()).
     eapi.download(export_id, f'{param_value}.png', override=True)
-
-
