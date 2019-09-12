@@ -35,7 +35,7 @@ with Session(**creds) as d:
         view_id=dash_id,
         view_data=dash_data_with_param
     )
-    # IT can then be downloaded (or displayed with .show()).
+    # It can then be downloaded (or displayed with .show_image()).
     eapi.download(export_id, f'{param_value}.png', override=True)
 
 
