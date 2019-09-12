@@ -1,4 +1,4 @@
-class NonInterativeUserError(Exception):
+class NonInteractiveUserError(Exception):
     pass
 
 
@@ -17,11 +17,11 @@ class ExportApi:
     def assert_interactive_user(self):
         """An export can only be run by an interactive user. Check that."""
         if self.session.is_api_session():
-            raise NonInterativeUserError("To run export, you need an non-api user.")
+            raise NonInteractiveUserError("To run export, you need a non-api user.")
 
     def enqueue_raw(self, raw_json):
         """
-        Enqueue an export when the full json is given
+        Enqueue an export when the full json is given.
         """
 
         self.assert_interactive_user()
@@ -32,6 +32,9 @@ class ExportApi:
     def enqueue(self, view_data, provider_id, view_id):
         """
         Enqueue an export based on its specification.
+        View_id is the dashboard id.
+        view_data is the data from the dashboard. Basically its full definition. See example.
+        provider_id: image, pdf, other?
         """
         # Otherwise you'll get headers, footers, explore menu.
         view_data['initialViewOptions'] = 'viewonly'
