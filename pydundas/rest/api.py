@@ -4,8 +4,12 @@ import importlib
 class Api:
 
     apis = [
+        'account',
         'constant',
         'cube',
+        'dashboard',
+        'export',
+        'file',
         'health',
         'job',
         'js',

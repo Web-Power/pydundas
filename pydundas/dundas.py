@@ -2,6 +2,8 @@ import requests
 import logging
 from .exceptions import YamlNotReadableError, LoginFailedError
 
+from .rest.api import Api
+
 
 # Helper method, not really part of the class itself.
 def creds_from_yaml(yamlpath):
@@ -121,6 +123,13 @@ class Session:
 
     def is_loggedin(self):
         return bool(getattr(self, 'session_id'))
+
+    def session_data(self):
+        return self.get('session/' + self.session_id).json()
+
+    def is_api_session(self):
+        account_id = self.session_data()['accountId']
+        return Api(self).account().is_api_account(account_id)
 
     # All get/post/delete will have the same url base, and will all require the same
     # params parameter. Let's make everybody's life easy.
