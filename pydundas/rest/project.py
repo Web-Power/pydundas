@@ -50,7 +50,7 @@ class ProjectApi:
             # print(self.getProjectByName(project_name)[dir_attr])
             return self.getProjectByName(project_name)[dir_attr]['id']
         else:
-            raise Exception("Need a valid resource folder type. Got '{got}' but expects one of: {expect}.".format(
+            raise Exception("Need a valid resource folder type. Got '{got}' but expected one of: {expect}.".format(
                 got=resource_type,
                 expect=', '.join(type_to_apiname.keys())
             ))

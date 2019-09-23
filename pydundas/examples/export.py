@@ -7,7 +7,7 @@ with Session(**creds) as d:
     eapi = api.export()
     dapi = api.dashboard()
 
-    # What id the dashboard root id?
+    # What is the dashboard root id?
     root_dir = api.project().getRootFolderIdForProject('project', 'dashboards')
     # Now where is the dashboard we are interested in?
     dash_dir = api.file().getFileInfo(root_dir, 'path/to/dashboard')
@@ -25,10 +25,10 @@ with Session(**creds) as d:
     dash_data_with_param = dapi.set_view_parameter(
         view_data=dash_data,
         param_name=param_name,
-        # Not the format here. It looks like it is required bu feels brittle for the long term.
+        # Note the format here. It looks like it is required but feels brittle for the long term.
         param_value=param_value + '.' + param_name
     )
-    # This generates the export of the server.
+    # This generates the export on the server, it will need to be retrieved later.
     export_id = eapi.enqueue(
         provider_id=img_provider,
         view_id=dash_id,

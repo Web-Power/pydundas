@@ -14,8 +14,9 @@ class FileApi:
 
     def getFileInfo(self, parent_dir_id, path, parents=''):
         """
-        Get recursively a file, from its full path.
-        parents is just a string accumulator to know where we are in the tree to display useful error message.
+        Get a file, from its full path.
+        The parents parameter is just a string accumulator to know where we are in the tree to display useful error
+        messages.
         """
         root, sep, rest = path.partition('/')
         current = None
@@ -25,7 +26,7 @@ class FileApi:
             if e.response.status_code == 410:
                 raise DundasFileNotFoundError("File '{}' in '{}' not found.".format(root, parents)) from None
             else:
-                # No idea what could be the cause here
+                # No idea what could be the cause here.
                 raise
 
         if not sep:

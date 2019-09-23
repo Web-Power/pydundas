@@ -14,7 +14,7 @@ class ExportApi:
         self.session = session
         self.factory = api
 
-    def assert_interactive_user(self):
+    def ensure_interactive_user(self):
         """An export can only be run by an interactive user. Check that."""
         if self.session.is_api_session():
             raise NonInteractiveUserError("To run export, you need a non-api user.")
@@ -24,7 +24,7 @@ class ExportApi:
         Enqueue an export when the full json is given.
         """
 
-        self.assert_interactive_user()
+        self.ensure_interactive_user()
         export_id = self.session.post('export', json=raw_json)
         # The returned ID is json, so between quotes which should be removed for future use.
         return export_id.text.replace('"', '')
